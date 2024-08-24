@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-center align-items-center">
+    <div class="form-width">
+        <form class="text-center" [formGroup]="loginForm" (ngSubmit)="loginForm.valid && login()">
+            <h2 class="text-center text-primary-emphasis">Log In</h2>
+            <hr>
+            <div class="col p-0">
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="Email" placeholder="Email" formControlName="email"
+                    [class.is-invalid]="loginForm.get('email')?.invalid && 
+                    (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)">
+                    <label for="Email">Email</label>
+                </div>
+            </div>
+
+            <div class="col p-0">
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="Password" placeholder="Password" formControlName="password"
+                    [class.is-invalid]="loginForm.get('password')?.invalid && 
+                    (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)">
+                    <label for="Password">Password</label>
+                </div>
+            </div>
+
+            <hr>
+            <div class="d-flex justify-content-center align-items-center">
+                <button class="btn btn-success me-4" type="submit" [disabled]="!loginForm.valid">Login</button>
+            </div>
+        </form>
+        <div class="mt-4 text-center">
+            <a routerLink="/forgot-password" class="text-info">Forgot Password</a>
+        </div>
+        <div class="row mt-4 google-btn">
+            <a (click)="signInWithGoogle()">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <img src="../../../../assets/images/Google_Icon.png" alt="" class="me-2">Sign in with Google
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="mt-4 text-center">
+            <a routerLink="/register" class="text-info">New to ChatVerse? Register</a>
+        </div>
+    </div>
+    <div class="img-div">
+        <img src="../../assets/images/logo.png" alt="signinpage">
+    </div>
+</div>

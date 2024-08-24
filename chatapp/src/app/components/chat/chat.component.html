@@ -1,0 +1,21 @@
+<div class="chat-container">
+  <form [formGroup]="userSelectionForm" (ngSubmit)="selectReciever()">
+    <select formControlName="receiverId">
+      <option *ngFor="let user of users" [value]="user.uid">{{user.userName}}</option>
+    </select>
+    <button type="submit" class="btn btn-success">Chat</button>
+  </form>
+  <div class="messages">
+    <ul *ngFor="let chat of chats">
+      <li>{{chat.id}} {{chat.sender}} {{chat.receiver}}</li>
+      <li>{{chat.chatContent[0].message}}</li>
+    </ul>
+  </div>
+  <div *ngFor="let message of messages">{{message}}</div>
+  <form [formGroup]="messageInput" (ngSubmit)="sendMessage()">
+      <input formControlName="message" placeholder="Type a message..." />
+      <button type="submit">Send</button>
+  </form>
+</div>
+  <!-- Can't bind to 'ngModel' since it isn't a known property of 'input'.ngtsc(-998002)
+chat.component.ts(5, 28): Error occurs in the template of component ChatComponent. -->

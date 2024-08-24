@@ -1,0 +1,16 @@
+{
+  "name": "chatserver",
+  "version": "1.0.0",
+  "description": "a server for chat app",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "author": "kaumudi",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4",
+    "socket.io": "^4.7.5"
+  }
+}

@@ -1,0 +1,16 @@
+.form-width {
+    width: 36%;
+    margin-left: 130px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 50px;
+}
+
+.google-btn {
+    cursor: pointer;
+}
+
+.img-div {
+    height: 500px;
+    margin-left: 40px;
+}
