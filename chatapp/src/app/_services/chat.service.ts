@@ -115,6 +115,11 @@ export class ChatService {
   //   );
   // }
 
+  setUserId(userId: string) {
+    // this.userId = userId;
+    this.socket.emit('register', userId);
+  }
+
   getMessages() {
     return this.socket.fromEvent('received').pipe(
       map((data) => {
@@ -131,7 +136,7 @@ export class ChatService {
       message: message,
       senderId: senderId,
       receiverId: receiverId
-  };
+    };
     this.socket.emit('message', messageData);
   }
   

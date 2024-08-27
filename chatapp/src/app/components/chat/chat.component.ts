@@ -28,7 +28,10 @@ export class ChatComponent {
   ) { }
 
   ngOnInit(): void {
-    this.authService.user$.subscribe((user) => this.userId = user?.uid!);
+    this.authService.user$.subscribe((user) => {
+      this.userId = user?.uid!;
+      this.chatService.setUserId(this.userId);
+    });
     this.utilService.getUsers().subscribe((users) => {
       this.users = users;
       console.log(this.users);
