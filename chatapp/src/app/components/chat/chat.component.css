@@ -1,0 +1,46 @@
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;
+    align-items: center; */
+}
+
+/* .user-selector {
+    width: 30%;
+} */
+
+/* .message-input {
+    width: 60%;
+    text-align: end;
+} */
+
+/* form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+
+.message-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    /* gap: 3%; */
+}
+
+.users-list-group {
+    width: 35%;
+    padding: 0 2%;
+}
+
+.list-group {
+    font-weight: 600;
+    text-align: start;
+}
+
+.list-group-item {
+    padding-left: 10%;
+}
+
+.messages {
+    width: 60%;
+}

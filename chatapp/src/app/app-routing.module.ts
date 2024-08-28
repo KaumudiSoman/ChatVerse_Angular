@@ -5,6 +5,7 @@ import { LoginComponent } from './components/user-authentication/login/login.com
 import { RegisterComponent } from './components/user-authentication/register/register.component';
 import { VerifyEmailComponent } from './components/user-authentication/verify-email/verify-email.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { ChatdetailComponent } from './components/chatdetail/chatdetail.component';
 
 const routes: Routes = [
   // {path: '', component: HomeComponent},
@@ -13,6 +14,7 @@ const routes: Routes = [
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'verify-email', component: VerifyEmailComponent},
   {path: 'chat', component: ChatComponent},
+  {path: 'chat-detail/:id', component: ChatdetailComponent}
 ];
 
 @NgModule({

@@ -1,0 +1,41 @@
+<!-- <div *ngIf="otherUser" class="chat-detail-container">
+    <div class="other-user bg-primary text-light">{{otherUser}}</div>
+    <div class="chats">
+        <span *ngFor="let content of chat?.chatContent" class="msg"
+            [class.text-end]="userId === content?.sender" [class.text-start]="userId !== content?.sender" 
+            [class.bg-success]="userId === content?.sender" [class.bg-light]="userId !== content?.sender"
+            [class.text-light]="userId === content?.sender">
+            <p >{{content.message}}</p>
+            <p class="text-secondary">{{getReadableDate(content.timestamp)}}</p>
+        </span>
+    </div>
+</div> -->
+
+<div *ngIf="!otherUser" class="chat-detail-landing">Chat with your friends through ChatVerse...</div>
+
+<div *ngIf="otherUser" class="chat-detail-container">
+    <div class="other-user bg-primary text-light">{{ otherUser }}</div>
+    <div class="chats-container">
+        <div *ngFor="let content of chat?.chatContent" class="chat-bubble"
+        [class.align-end]="userId === content?.sender" [class.align-start]="userId !== content?.sender" 
+            [class.bg-primary]="userId === content?.sender" [class.bg-light]="userId !== content?.sender"
+            [class.text-light]="userId === content?.sender">
+            <p class="message">{{ content.message }}</p>
+            <p class="text-secondary timestamp">{{ getReadableDate(content.timestamp) }} </p>
+        </div>
+        <div *ngFor="let message of messages" class="chat-bubble"
+        [class.align-end]="message.senderId === userId" [class.align-start]="message.receiverId === userId"
+        [class.bg-primary]="message.senderId === userId" [class.bg-light]="message.receiverId === userId"
+        [class.text-light]="message.senderId === userId">
+            <p  class="message">{{message.message}}</p>
+            <p class="text-secondary timestamp">{{getCurrentTimestamp()}}</p>
+        </div>
+    </div>
+    <form [formGroup]="messageInput" (ngSubmit)="sendMessage()">
+        <div class="input-group mb-3 message-input">
+          <input formControlName="message" type="text" class="form-control" placeholder="Type a Message">
+          <button class="btn btn-success" type="submit"><i class="fa fa-share"></i></button>
+        </div>
+      </form>
+</div>
+  

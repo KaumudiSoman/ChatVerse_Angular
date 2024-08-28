@@ -21,6 +21,7 @@ import { ForgotPasswordComponent } from './components/user-authentication/forgot
 import { VerifyEmailComponent } from './components/user-authentication/verify-email/verify-email.component';
 import { NavComponent } from './components/nav/nav.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { ChatdetailComponent } from './components/chatdetail/chatdetail.component';
 
 
 const config: SocketIoConfig = { url: 'http://localhost:4000', options: {} };
@@ -33,7 +34,8 @@ const config: SocketIoConfig = { url: 'http://localhost:4000', options: {} };
     ForgotPasswordComponent,
     VerifyEmailComponent,
     NavComponent,
-    ChatComponent
+    ChatComponent,
+    ChatdetailComponent
   ],
   imports: [
     BrowserModule,

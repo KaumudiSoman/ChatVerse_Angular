@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, query, where, getDocs, setDoc } from '@angular/fire/firestore';
 import { Socket } from 'ngx-socket-io';
 import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs';
-import { Chat } from '../_models/ChatModels';
+import { Chat, Message } from '../_models/ChatModels';
 import { AuthService } from './auth.service';
 // import { io, Socket } from 'socket.io-client';
 
@@ -169,7 +169,7 @@ export class ChatService {
               return collectionData(chatContentRef).pipe(
                 map(chatContent => ({
                   ...chat,
-                  chatContent // Add the chatContent to each chat object
+                  chatContent: chatContent as Message[] // Add the chatContent to each chat object
                 }))
               );
             });

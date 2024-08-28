@@ -1,21 +1,42 @@
-<div class="chat-container">
-  <form [formGroup]="userSelectionForm" (ngSubmit)="selectReciever()">
-    <select formControlName="receiverId">
-      <option *ngFor="let user of users" [value]="user.uid">{{user.userName}}</option>
-    </select>
-    <button type="submit" class="btn btn-success">Chat</button>
-  </form>
-  <div class="messages">
-    <ul *ngFor="let chat of chats">
-      <li>{{chat.id}} {{chat.sender}} {{chat.receiver}}</li>
-      <li>{{chat.chatContent[0].message}}</li>
-    </ul>
+<div class="chat-container container">
+  <!-- <form [formGroup]="userSelectionForm" (ngSubmit)="selectReciever()">
+    <div class="input-group mb-3 user-selector">
+      <select formControlName="receiverId" class="form-select">
+        <option *ngFor="let user of users" [value]="user.uid">{{user.userName}}</option>
+      </select>
+      <button class="btn btn-success" type="submit">Chat</button>
+    </div>
+  </form> -->
+
+  <div class="message-container mb-3">
+    <div class="users-list-group">
+      <form [formGroup]="userSelectionForm" (ngSubmit)="selectReciever()">
+        <div class="input-group mb-3 user-selector">
+          <select formControlName="receiverId" class="form-select">
+            <option *ngFor="let user of users" [value]="user.uid">{{user.userName}}</option>
+          </select>
+          <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+        </div>
+      </form>
+      <div class="list-group">
+        <a class="list-group-item list-group-item-action" *ngFor="let chat of allChats; let i = index" (click)="openChatDetail(chat)">{{usernames[i]}}</a>
+      </div>
+    </div>
+    <div class="messages">
+      <app-chatdetail [chat]="openChat" [userId]="userId" [otherUser]="otherUser" [socketMsg]="messages"></app-chatdetail>
+      <!-- <form [formGroup]="messageInput" (ngSubmit)="sendMessage()">
+        <div class="input-group mb-3 message-input">
+          <input formControlName="message" type="text" class="form-control" placeholder="Type a Message">
+          <button class="btn btn-success" type="submit"><i class="fa fa-share"></i></button>
+        </div>
+      </form> -->
+    </div>
   </div>
-  <div *ngFor="let message of messages">{{message}}</div>
-  <form [formGroup]="messageInput" (ngSubmit)="sendMessage()">
-      <input formControlName="message" placeholder="Type a message..." />
-      <button type="submit">Send</button>
-  </form>
+  
+  <!-- <form [formGroup]="messageInput" (ngSubmit)="sendMessage()">
+    <div class="input-group mb-3 message-input">
+      <input formControlName="message" type="text" class="form-control" placeholder="Type a Message">
+      <button class="btn btn-success" type="submit">Send</button>
+    </div>
+  </form> -->
 </div>
-  <!-- Can't bind to 'ngModel' since it isn't a known property of 'input'.ngtsc(-998002)
-chat.component.ts(5, 28): Error occurs in the template of component ChatComponent. -->
