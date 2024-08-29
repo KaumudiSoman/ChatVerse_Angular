@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Socket } from 'ngx-socket-io';
 import { AllChats, Chat, ChatsDetail } from 'src/app/_models/ChatModels';
 import { AuthService } from 'src/app/_services/auth.service';
 import { ChatService } from 'src/app/_services/chat.service';
@@ -31,9 +32,10 @@ export class ChatComponent {
   usernames: string[] = [];
   totalUsernames: number = 0;
   otherUser: string = '';
+  userStatus: boolean = false;
 
   constructor(private chatService: ChatService, private fb: FormBuilder, private authService: AuthService,
-    private utilService: UtilService
+    private utilService: UtilService, private socket: Socket
   ) { }
 
   ngOnInit(): void {
@@ -41,14 +43,21 @@ export class ChatComponent {
       this.userId = user?.uid!;
       this.chatService.setUserId(this.userId);
     });
-    this.utilService.getUsers().subscribe((users) => {
-      this.users = users;
-      console.log(this.users);
-    })
+    this.getUsers();
+    
     this.getUserChats();
     // this.getMessages();
     this.initializeMessageInput();
     this.initializeUserSelection();
+  }
+
+  getUsers() {
+    this.utilService.getUsers().subscribe((users) => {
+      this.users = users;
+      console.log(this.userId);
+      this.users = this.users.filter(user => user.uid !== this.userId);
+      console.log(this.users);
+    });
   }
 
   initializeMessageInput() {
@@ -127,8 +136,13 @@ export class ChatComponent {
   //   }
   // }
 
+  isUserOnline(userId: string) {
+    this.socket.emit('checkUserOnline', userId, (isOnline: boolean) => {
+      this.userStatus = isOnline;
+    });
+  }
+
   selectReciever() {
-    // console.log(this.userSelectionForm.value);
     let formValue = this.userSelectionForm.value.receiverId;
     console.log(formValue);
     this.receiverId = String(formValue);
@@ -149,7 +163,6 @@ export class ChatComponent {
           this.getUserName(chat);
         });
       }
-      // this.getUserName(chat);
     });
   }
   
@@ -173,30 +186,20 @@ export class ChatComponent {
         this.totalUsernames = this.usernames.length;
         return this.userNamesMap.get(chat.sender) || 'Loading...';
       }
-      // return this.userNamesMap.get(chat.sender) || 'Loading...';
     }
     return '';
   }
 
-  openChatDetail(chat: AllChats) {
-    console.log(chat);
-    this.utilService.getUserById(chat.userIds.filter(id => id != this.userId)[0]).subscribe((user) => {
+  openChatDetail(uid: string) {
+    const chat: AllChats = this.allChats.find(chat => chat.userIds.includes(this.userId) && chat.userIds.includes(uid))!;
+    this.utilService.getUserById(uid).subscribe((user) => {
       this.otherUser = user.userName;
-    })
-    
-    chat.chatContent.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
-  //   if(chat.sender === this.userId) {
-  //     this.selectedUser = chat.receiver;
-  //   }
-  //   else if(chat.receiver === this.userId) {
-  //     this.selectedUser = chat.sender;
-  //   }
+    });
+    if(chat) {
+      chat.chatContent.sort((a, b) => a.timestamp.seconds - b.timestamp.seconds);
+    }
     this.openChat = chat;
-    console.log(this.otherUser);
-  //   this.filteredMessages = this.chats.filter(chat =>
-  //     (chat.sender === this.userId && chat.receiver === this.selectedUser) ||
-  //     (chat.sender === this.selectedUser && chat.receiver === this.userId)
-  //   );
-  //   console.log(this.filteredMessages);
+    this.isUserOnline(uid);
+    console.log(this.openChat);
   }
 }

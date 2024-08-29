@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { Socket } from 'ngx-socket-io';
 import { AllChats, Chat } from 'src/app/_models/ChatModels';
 import { ChatService } from 'src/app/_services/chat.service';
 
@@ -12,15 +13,18 @@ import { ChatService } from 'src/app/_services/chat.service';
 export class ChatdetailComponent implements OnInit {
   @Input() chat: AllChats | undefined;
   @Input() userId: string | undefined;
-  // @Input() messages: Chat[] | undefined;
   @Input() otherUser: string | undefined;
-  @Input() socketMsg: string[] | undefined;
+  @Input() userStatus: boolean | undefined;
+
+  @ViewChild('chatContainer') chatContainer!: ElementRef;
 
   messageInput: FormGroup = new FormGroup({});
   messages: any[] = [];
   messageContent: string = '';
 
-  constructor(private fb: FormBuilder, private chatService: ChatService) { }
+  // userStatus: boolean = false;
+
+  constructor(private fb: FormBuilder, private chatService: ChatService, private socket: Socket) { }
 
   ngOnInit(): void {
     this.initializeMessageInput();
@@ -37,12 +41,6 @@ export class ChatdetailComponent implements OnInit {
     this.chatService.getMessages().subscribe((data: any) => {
       console.log(data.data);
       this.messages.push(data.data);
-      // const receivedMessages = Array.isArray(data.data) ? data.data : [data.data];
-      // this.messages.push(...receivedMessages.map((msg: any) => ({
-      //   message: msg.message,
-      //   senderId: msg.senderId,
-      //   receiverId: msg.receiverId
-      // })));
     })
   }
 
@@ -61,6 +59,12 @@ export class ChatdetailComponent implements OnInit {
     }
     this.resetForm();
   }
+
+  // isUserOnline(userId: string) {
+  //   this.socket.emit('checkUserOnline', userId, (isOnline: boolean) => {
+  //     this.userStatus = isOnline;
+  //   });
+  // }
 
   resetForm() {
     this.messageInput.reset({

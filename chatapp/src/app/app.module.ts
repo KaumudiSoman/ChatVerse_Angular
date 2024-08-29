@@ -22,6 +22,7 @@ import { VerifyEmailComponent } from './components/user-authentication/verify-em
 import { NavComponent } from './components/nav/nav.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { ChatdetailComponent } from './components/chatdetail/chatdetail.component';
+import { ScrolltobottomDirective } from './_directives/scrolltobottom.directive';
 
 
 const config: SocketIoConfig = { url: 'http://localhost:4000', options: {} };
@@ -35,7 +36,8 @@ const config: SocketIoConfig = { url: 'http://localhost:4000', options: {} };
     VerifyEmailComponent,
     NavComponent,
     ChatComponent,
-    ChatdetailComponent
+    ChatdetailComponent,
+    ScrolltobottomDirective
   ],
   imports: [
     BrowserModule,

@@ -14,8 +14,12 @@
 <div *ngIf="!otherUser" class="chat-detail-landing">Chat with your friends through ChatVerse...</div>
 
 <div *ngIf="otherUser" class="chat-detail-container">
-    <div class="other-user bg-primary text-light">{{ otherUser }}</div>
-    <div class="chats-container">
+    <div class="other-user bg-primary text-light">{{ otherUser }}
+        <p *ngIf="userStatus">Online</p>
+        <p *ngIf="!userStatus">Offline</p>
+    </div>
+    <div *ngIf="!chat" class="start-convo">Start Conversation</div>
+    <div class="chats-container" *ngIf="chat" appScrolltobottom>
         <div *ngFor="let content of chat?.chatContent" class="chat-bubble"
         [class.align-end]="userId === content?.sender" [class.align-start]="userId !== content?.sender" 
             [class.bg-primary]="userId === content?.sender" [class.bg-light]="userId !== content?.sender"

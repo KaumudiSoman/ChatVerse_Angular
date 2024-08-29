@@ -23,6 +23,11 @@ server.on('connection', (socket) => {
         // socket.broadcast.emit('received', {data: data});
     });
 
+    socket.on('checkUserOnline', (userId, callback) => {
+        const isOnline = userSocketMap.has(userId);
+        callback(isOnline);
+    })
+
     socket.on('disconnect', () => {
         for (const [userId, socketId] of userSocketMap.entries()) {
             if (socketId === socket.id) {

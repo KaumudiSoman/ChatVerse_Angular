@@ -10,20 +10,20 @@
 
   <div class="message-container mb-3">
     <div class="users-list-group">
-      <form [formGroup]="userSelectionForm" (ngSubmit)="selectReciever()">
+      <!-- <form [formGroup]="userSelectionForm" (ngSubmit)="selectReciever()">
         <div class="input-group mb-3 user-selector">
           <select formControlName="receiverId" class="form-select">
             <option *ngFor="let user of users" [value]="user.uid">{{user.userName}}</option>
           </select>
           <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
         </div>
-      </form>
+      </form> -->
       <div class="list-group">
-        <a class="list-group-item list-group-item-action" *ngFor="let chat of allChats; let i = index" (click)="openChatDetail(chat)">{{usernames[i]}}</a>
+        <a class="list-group-item list-group-item-action" *ngFor="let user of users; let i = index" (click)="openChatDetail(user.uid)">{{user.userName}}</a>
       </div>
     </div>
     <div class="messages">
-      <app-chatdetail [chat]="openChat" [userId]="userId" [otherUser]="otherUser" [socketMsg]="messages"></app-chatdetail>
+      <app-chatdetail [chat]="openChat" [userId]="userId" [otherUser]="otherUser" [userStatus]="userStatus"></app-chatdetail>
       <!-- <form [formGroup]="messageInput" (ngSubmit)="sendMessage()">
         <div class="input-group mb-3 message-input">
           <input formControlName="message" type="text" class="form-control" placeholder="Type a Message">

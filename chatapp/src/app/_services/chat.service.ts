@@ -181,7 +181,6 @@ export class ChatService {
       })
     );
   }
-
   
   saveMessagesToFireStore(data: any) {
     console.log(data);
@@ -224,30 +223,5 @@ export class ChatService {
       }
     });
   
-  }
-  
-
-  createOrJoinChat(userId1: string, userId2: string) {
-    const chatsRef = collection(this.firestore, 'chats');
-    const q = query(chatsRef, 
-      where('userIds', 'array-contains', userId1),
-      where('userIds', 'array-contains', userId2)
-    );
-  
-    return from(getDocs(q)).pipe(
-      switchMap(snapshot => {
-        if (snapshot.empty) {
-          // No chat exists, create a new one
-          const newChat = {
-            userIds: [userId1, userId2],
-            createdAt: new Date()
-          };
-          return from(addDoc(chatsRef, newChat));
-        } else {
-          // Chat exists, return its reference
-          return from(Promise.resolve(snapshot.docs[0].ref));
-        }
-      })
-    );
   }
 }
