@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, query, where, getDocs, setDoc } from '@angular/fire/firestore';
 import { Socket } from 'ngx-socket-io';
 import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs';
-import { Chat, Message } from '../_models/ChatModels';
+import { AllChats, Chat, ChatsDetail, Message } from '../_models/ChatModels';
 import { AuthService } from './auth.service';
 // import { io, Socket } from 'socket.io-client';
 
@@ -124,7 +124,7 @@ export class ChatService {
     return this.socket.fromEvent('received').pipe(
       map((data) => {
         console.log(data);
-        this.saveMessagesToFireStore(data);
+        // this.saveMessagesToFireStore(data);
         return data;
       })
     );
@@ -138,6 +138,9 @@ export class ChatService {
       receiverId: receiverId
     };
     this.socket.emit('message', messageData);
+    if(senderId && receiverId && senderId !== '' && receiverId !== '') {
+      this.saveMessagesToFireStore(messageData);
+    }
   }
   
   getUserChatsWithContent(): Observable<Chat[]> {
@@ -185,17 +188,17 @@ export class ChatService {
   saveMessagesToFireStore(data: any) {
     console.log(data);
     const chatsRef = collection(this.firestore, 'chats2');
-    const q = query(chatsRef, where('sender', '==', data.data.senderId), where('receiver', '==', data.data.receiverId));
+    const q = query(chatsRef, where('sender', '==', data.senderId), where('receiver', '==', data.receiverId));
 
     from(getDocs(q)).pipe(
       switchMap(snapshot => {
         if (snapshot.empty) {
           // If no matching document is found, create a new chat document
-          const newChatRef = doc(chatsRef, `${data.data.senderId}_${data.data.receiverId}`);
+          const newChatRef = doc(chatsRef, `${data.senderId}_${data.receiverId}`);
   
           return from(setDoc(newChatRef, {
-            sender: data.data.senderId,
-            receiver: data.data.receiverId
+            sender: data.senderId,
+            receiver: data.receiverId
           })).pipe(map(() => newChatRef)); // Return the new chat document reference
         } 
         else {
@@ -208,9 +211,7 @@ export class ChatService {
         const chatContentRef = collection(chatDocRef, 'chatContent');
 
         return from(addDoc(chatContentRef, {
-          // senderId: data.data.senderId,
-          // receiverId: data.data.receiverId,
-          message: data.data.message,
+          message: data.message,
           timestamp: new Date()
         }));
       })
@@ -222,6 +223,12 @@ export class ChatService {
         console.error('Error storing message in Firestore:', error);
       }
     });
-  
+  }
+
+  deleteMessageFromFirestore(chat: AllChats, chatContent: ChatsDetail) {
+    const chatsRef = collection(this.firestore, 'chats2')
+    const q = query(chatsRef, where('sender', '==', chatContent.sender), 
+                    where('receiver', '==', chat.userIds.filter(id => id !== chatContent.sender)[0]));
+    
   }
 }

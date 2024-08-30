@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '
 import { Timestamp } from '@angular/fire/firestore';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Socket } from 'ngx-socket-io';
-import { AllChats, Chat } from 'src/app/_models/ChatModels';
+import { AllChats, Chat, ChatsDetail } from 'src/app/_models/ChatModels';
 import { ChatService } from 'src/app/_services/chat.service';
 
 @Component({
@@ -21,6 +21,8 @@ export class ChatdetailComponent implements OnInit {
   messageInput: FormGroup = new FormGroup({});
   messages: any[] = [];
   messageContent: string = '';
+
+  dropdown: boolean = false;
 
   // userStatus: boolean = false;
 
@@ -85,5 +87,17 @@ export class ChatdetailComponent implements OnInit {
       second: '2-digit',
       hour12: true, 
     });
+  }
+
+  enableDropdown() {
+    this.dropdown = true;
+  }
+
+  deleteMessage(chatContent: ChatsDetail) {
+    this.chatService.deleteMessageFromFirestore(this.chat!, chatContent)
+  }
+
+  editMessage(chat: AllChats) {
+
   }
 }

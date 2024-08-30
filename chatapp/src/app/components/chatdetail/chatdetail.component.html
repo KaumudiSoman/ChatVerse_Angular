@@ -19,13 +19,36 @@
         <p *ngIf="!userStatus">Offline</p>
     </div>
     <div *ngIf="!chat" class="start-convo">Start Conversation</div>
-    <div class="chats-container" *ngIf="chat" appScrolltobottom>
+    <div class="chats-container" *ngIf="chat">
         <div *ngFor="let content of chat?.chatContent" class="chat-bubble"
         [class.align-end]="userId === content?.sender" [class.align-start]="userId !== content?.sender" 
             [class.bg-primary]="userId === content?.sender" [class.bg-light]="userId !== content?.sender"
             [class.text-light]="userId === content?.sender">
-            <p class="message">{{ content.message }}</p>
-            <p class="text-secondary timestamp">{{ getReadableDate(content.timestamp) }} </p>
+            <div class="message-container">
+                <!-- <p class="message">{{ content.message }}</p> -->
+                <!-- <button (click)="enableDropdown()" class="btn-more" 
+                    [class.btn-more-primary]="userId === content?.sender" [class.btn-more-light]="userId !== content?.sender">
+                    <i class="fa fa-ellipsis-v text-center" [class.text-light]="userId === content?.sender" 
+                    [class.text-dark]="userId !== content?.sender"></i>
+                </button> -->
+                <div class="dropdown" dropdown>
+                    <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle>
+                        <i class="fa fa-ellipsis-v text-center" [class.text-light]="userId === content?.sender" 
+                    [class.text-dark]="userId !== content?.sender"></i>
+                    </a>
+                    <div class="dropdown-menu" *dropdownMenu>
+                        <a class="dropdown-item" (click)="editMessage(chat)">Edit</a>
+                        <a class="dropdown-item" (click)="deleteMessage(content)">Delete</a>
+                    </div>
+                </div>
+                <div class="message-div">
+                    <p class="message">{{ content.message }}</p>
+                    <p class="text-secondary timestamp">{{ getReadableDate(content.timestamp) }} </p>
+                </div>
+                
+            </div>
+            
+            <!-- <p class="text-secondary timestamp">{{ getReadableDate(content.timestamp) }} </p> -->
         </div>
         <div *ngFor="let message of messages" class="chat-bubble"
         [class.align-end]="message.senderId === userId" [class.align-start]="message.receiverId === userId"
