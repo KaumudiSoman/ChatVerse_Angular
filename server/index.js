@@ -20,7 +20,6 @@ server.on('connection', (socket) => {
         else {
             console.log(`User ${data.receiverId} is not connected`);
         }
-        // socket.broadcast.emit('received', {data: data});
     });
 
     socket.on('checkUserOnline', (userId, callback) => {

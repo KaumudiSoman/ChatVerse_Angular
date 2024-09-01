@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Socket } from 'ngx-socket-io';
+import { map } from 'rxjs';
 import { AllChats, Chat, ChatsDetail } from 'src/app/_models/ChatModels';
 import { ChatService } from 'src/app/_services/chat.service';
 
@@ -16,21 +17,23 @@ export class ChatdetailComponent implements OnInit {
   @Input() otherUser: string | undefined;
   @Input() userStatus: boolean | undefined;
 
-  @ViewChild('chatContainer') chatContainer!: ElementRef;
-
   messageInput: FormGroup = new FormGroup({});
   messages: any[] = [];
   messageContent: string = '';
 
   dropdown: boolean = false;
+  isModalOpen: boolean = false;
 
-  // userStatus: boolean = false;
+  editMessageForm: FormGroup = new FormGroup({});
+
+  theChatContent: ChatsDetail = {} as ChatsDetail;
 
   constructor(private fb: FormBuilder, private chatService: ChatService, private socket: Socket) { }
 
   ngOnInit(): void {
     this.initializeMessageInput();
     this.getMessages();
+    this.initializeEditMessageForm();
   }
 
   initializeMessageInput() {
@@ -39,11 +42,17 @@ export class ChatdetailComponent implements OnInit {
     })
   }
 
+  initializeEditMessageForm() {
+    this.editMessageForm = this.fb.group({
+      editedMessage: ['']
+    })
+  }
+
   getMessages() {
     this.chatService.getMessages().subscribe((data: any) => {
       console.log(data.data);
       this.messages.push(data.data);
-    })
+    });
   }
 
   sendMessage(): void {
@@ -62,12 +71,6 @@ export class ChatdetailComponent implements OnInit {
     this.resetForm();
   }
 
-  // isUserOnline(userId: string) {
-  //   this.socket.emit('checkUserOnline', userId, (isOnline: boolean) => {
-  //     this.userStatus = isOnline;
-  //   });
-  // }
-
   resetForm() {
     this.messageInput.reset({
       message: ''
@@ -75,8 +78,8 @@ export class ChatdetailComponent implements OnInit {
   }
 
   getReadableDate(timestamp: Timestamp): string {
-    const date: Date = timestamp.toDate(); // Convert to JavaScript Date object
-    return date.toLocaleString(); // Convert to a readable string format
+    const date: Date = timestamp.toDate();
+    return date.toLocaleString();
   }
 
   getCurrentTimestamp() {
@@ -94,10 +97,46 @@ export class ChatdetailComponent implements OnInit {
   }
 
   deleteMessage(chatContent: ChatsDetail) {
-    this.chatService.deleteMessageFromFirestore(this.chat!, chatContent)
+    this.chatService.deleteMessageFromFirestore(this.chat!.id, chatContent.id).subscribe(() => {
+      if(this.chat?.chatContent) {
+        this.chat.chatContent = this.chat?.chatContent.filter(content => content.id !== chatContent.id)
+      }
+    });
   }
 
-  editMessage(chat: AllChats) {
+  openEditModal(chatContent: ChatsDetail) {
+    this.editMessageForm.setValue({
+      editedMessage: chatContent.message 
+    })
+    this.theChatContent = chatContent;
+    this.isModalOpen = true;
+  }
 
+  editMessage() {
+    const formvalue = this.editMessageForm.value.editedMessage;
+
+    this.chatService.editMessageFromFirestore(this.chat!.id, this.theChatContent.id, String(formvalue)).subscribe(() => {
+
+      if(this.chat?.chatContent) {
+        const index = this.chat.chatContent.findIndex(content => content.id === this.theChatContent.id);
+        if(index > -1) {
+          this.chat.chatContent[index].message = String(formvalue);
+        }
+      }
+    })
+
+    this.resetEditMessageForm();
+    this.isModalOpen = false;
+  }
+
+  closeModal() {
+    this.resetEditMessageForm();
+    this.isModalOpen = false;
+  }
+
+  resetEditMessageForm() {
+    this.editMessageForm.reset({
+      editedMessage: ''
+    });
   }
 }

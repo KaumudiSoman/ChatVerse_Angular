@@ -1,16 +1,3 @@
-<!-- <div *ngIf="otherUser" class="chat-detail-container">
-    <div class="other-user bg-primary text-light">{{otherUser}}</div>
-    <div class="chats">
-        <span *ngFor="let content of chat?.chatContent" class="msg"
-            [class.text-end]="userId === content?.sender" [class.text-start]="userId !== content?.sender" 
-            [class.bg-success]="userId === content?.sender" [class.bg-light]="userId !== content?.sender"
-            [class.text-light]="userId === content?.sender">
-            <p >{{content.message}}</p>
-            <p class="text-secondary">{{getReadableDate(content.timestamp)}}</p>
-        </span>
-    </div>
-</div> -->
-
 <div *ngIf="!otherUser" class="chat-detail-landing">Chat with your friends through ChatVerse...</div>
 
 <div *ngIf="otherUser" class="chat-detail-container">
@@ -25,19 +12,13 @@
             [class.bg-primary]="userId === content?.sender" [class.bg-light]="userId !== content?.sender"
             [class.text-light]="userId === content?.sender">
             <div class="message-container">
-                <!-- <p class="message">{{ content.message }}</p> -->
-                <!-- <button (click)="enableDropdown()" class="btn-more" 
-                    [class.btn-more-primary]="userId === content?.sender" [class.btn-more-light]="userId !== content?.sender">
-                    <i class="fa fa-ellipsis-v text-center" [class.text-light]="userId === content?.sender" 
-                    [class.text-dark]="userId !== content?.sender"></i>
-                </button> -->
-                <div class="dropdown" dropdown>
+                <div class="dropdown" *ngIf="content.sender === userId" dropdown>
                     <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle>
                         <i class="fa fa-ellipsis-v text-center" [class.text-light]="userId === content?.sender" 
                     [class.text-dark]="userId !== content?.sender"></i>
                     </a>
                     <div class="dropdown-menu" *dropdownMenu>
-                        <a class="dropdown-item" (click)="editMessage(chat)">Edit</a>
+                        <a class="dropdown-item" (click)="openEditModal(content)">Edit</a>
                         <a class="dropdown-item" (click)="deleteMessage(content)">Delete</a>
                     </div>
                 </div>
@@ -45,10 +26,7 @@
                     <p class="message">{{ content.message }}</p>
                     <p class="text-secondary timestamp">{{ getReadableDate(content.timestamp) }} </p>
                 </div>
-                
             </div>
-            
-            <!-- <p class="text-secondary timestamp">{{ getReadableDate(content.timestamp) }} </p> -->
         </div>
         <div *ngFor="let message of messages" class="chat-bubble"
         [class.align-end]="message.senderId === userId" [class.align-start]="message.receiverId === userId"
@@ -63,6 +41,24 @@
           <input formControlName="message" type="text" class="form-control" placeholder="Type a Message">
           <button class="btn btn-success" type="submit"><i class="fa fa-share"></i></button>
         </div>
-      </form>
+    </form>
+
+    <div id="newRequestModal" class="modal" [class.show]="isModalOpen">
+        <div class="modal-content d-flex justify-content-center align-items-center">
+          <form [formGroup]="editMessageForm" (ngSubmit)="editMessage()" class="text-center">
+            <h5>Edit Message</h5>
+            <hr />
+            <div class="input-group mb-3">
+              <span class="input-group-text">Edit</span>
+              <input type="text" class="form-control" id="username" formControlName="editedMessage">
+            </div>
+            
+            <br />
+    
+            <button [disabled]="!editMessageForm.valid" class="btn btn-success me-2" type="submit">Save</button>
+            <button class="btn btn-default" type="button" (click)="closeModal()">Close</button>
+          </form>
+        </div>
+    </div>
 </div>
   

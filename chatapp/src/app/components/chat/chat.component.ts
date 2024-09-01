@@ -21,7 +21,6 @@ export class ChatComponent {
   userId: string = '';
   users: any[] = [];
   receiverId: string = '';
-  selectedUser: string = '';
 
   chats: Chat[] = [];
   openChat: AllChats = {} as AllChats;
@@ -44,9 +43,7 @@ export class ChatComponent {
       this.chatService.setUserId(this.userId);
     });
     this.getUsers();
-    
     this.getUserChats();
-    // this.getMessages();
     this.initializeMessageInput();
     this.initializeUserSelection();
   }
@@ -54,9 +51,7 @@ export class ChatComponent {
   getUsers() {
     this.utilService.getUsers().subscribe((users) => {
       this.users = users;
-      console.log(this.userId);
       this.users = this.users.filter(user => user.uid !== this.userId);
-      console.log(this.users);
     });
   }
 
@@ -72,17 +67,8 @@ export class ChatComponent {
     })
   }
 
-  // getUserChats() {
-  //   this.chatService.getUserChatsWithContent().subscribe((chats: Chat[]) => {
-  //     console.log(chats);
-  //     this.chats = chats;
-  //     console.log(this.chats);
-  //     this.loadUserNamesForChats(this.chats);
-  //   })
-  // }
-
   getUserChats() {
-    this.chatService.getUserChatsWithContent().subscribe((chats: Chat[]) => {
+    this.chatService.getMessagesFromFireStore().subscribe((chats: Chat[]) => {
       const allChatsMap = new Map<string, AllChats>();
   
       chats.forEach(chat => {
@@ -94,6 +80,7 @@ export class ChatComponent {
         const userIdsKey = userIds.join('-'); // Create a unique key for the user pair
   
         const chatDetails: ChatsDetail[] = chat.chatContent.map(message => ({
+          id: message.id,
           sender: chat.sender,
           message: message.message,
           timestamp: message.timestamp
@@ -106,6 +93,7 @@ export class ChatComponent {
         } else {
           // If it doesn't exist, create a new AllChats object and add to the map
           allChatsMap.set(userIdsKey, {
+            id: chat.id,
             userIds,
             chatContent: chatDetails
           });
@@ -119,75 +107,11 @@ export class ChatComponent {
       this.allChats = allChats;
     });
   }
-  
-  // getMessages() {
-  //   this.chatService.getMessages().subscribe((data: any) => {
-  //     console.log(data);
-  //     this.messages.push(data.data.message);
-  //   })
-  // }
-
-  // sendMessage(): void {
-  //   this.messageContent = String(this.messageInput.value.message)
-  //   if (this.messageContent.trim()) {
-  //     this.chatService.sendMessage(this.messageContent, this.userId, this.receiverId);
-  //     this.messages.push(this.messageContent);
-  //     this.messageContent = '';
-  //   }
-  // }
 
   isUserOnline(userId: string) {
     this.socket.emit('checkUserOnline', userId, (isOnline: boolean) => {
       this.userStatus = isOnline;
     });
-  }
-
-  selectReciever() {
-    let formValue = this.userSelectionForm.value.receiverId;
-    console.log(formValue);
-    this.receiverId = String(formValue);
-  }
-
-  loadUserNamesForChats(chats: Chat[]): void {
-    console.log(this.userNamesMap);
-    chats.forEach(chat => {
-      if (chat.sender === this.userId && !this.userNamesMap.has(chat.receiver)) {
-        this.utilService.getUserById(chat.receiver).subscribe(user => {
-          this.userNamesMap.set(chat.receiver, user.userName);
-          this.getUserName(chat);
-        });
-      } 
-      else if (chat.receiver === this.userId && !this.userNamesMap.has(chat.sender)) {
-        this.utilService.getUserById(chat.sender).subscribe(user => {
-          this.userNamesMap.set(chat.sender, user.userName);
-          this.getUserName(chat);
-        });
-      }
-    });
-  }
-  
-  getUserName(chat: Chat): string {
-    console.log(this.usernames);
-    console.log(this.userNamesMap);
-
-    if (chat.sender === this.userId) {
-      console.log(this.userNamesMap.get(chat.receiver))
-      const flag: boolean = this.usernames.includes(this.userNamesMap.get(chat.receiver)!);
-      if(!flag) {
-        this.usernames.push(this.userNamesMap.get(chat.receiver)!);
-        this.totalUsernames = this.usernames.length;
-        return this.userNamesMap.get(chat.receiver) || 'Loading...';
-      }
-    } 
-    else if (chat.receiver === this.userId) {
-      const flag: boolean = this.usernames.includes(this.userNamesMap.get(chat.sender)!);
-      if(!flag) {
-        this.usernames.push(this.userNamesMap.get(chat.sender)!);
-        this.totalUsernames = this.usernames.length;
-        return this.userNamesMap.get(chat.sender) || 'Loading...';
-      }
-    }
-    return '';
   }
 
   openChatDetail(uid: string) {

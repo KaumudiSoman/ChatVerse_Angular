@@ -3,32 +3,31 @@
         <form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()">
             <h2 class="text-center text-primary-emphasis">Sign Up</h2>
             <hr>
-            <!-- <div class="row mb-3"> -->
-                <div class="col p-0">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="Username" placeholder="Username" formControlName="userName"
-                        [class.is-invalid]="registerForm.get('userName')?.invalid && 
-                        (registerForm.get('userName')?.dirty || registerForm.get('userName')?.touched)">
-                        <label for="Username">Username</label>
-                    </div>
+            <div class="col p-0">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="Username" placeholder="Username" formControlName="userName"
+                    [class.is-invalid]="registerForm.get('userName')?.invalid && 
+                    (registerForm.get('userName')?.dirty || registerForm.get('userName')?.touched)">
+                    <label for="Username">Username</label>
                 </div>
-                <div class="col p-0">
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="Email" placeholder="Email" formControlName="email"
-                        [class.is-invalid]="registerForm.get('email')?.invalid && 
-                        (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)">
-                        <label for="Email">Email</label>
-                    </div>
+            </div>
+            <div class="col p-0">
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="Email" placeholder="Email" formControlName="email"
+                    [class.is-invalid]="registerForm.get('email')?.invalid && 
+                    (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)">
+                    <label for="Email">Email</label>
                 </div>
-                
-                <div class="col p-0">
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password"
-                            [class.is-invalid]="registerForm.get('password')?.invalid && 
-                            (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)">
-                        <label for="password">Password</label>
-                    </div>
+            </div>
+            
+            <div class="col p-0">
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="password" placeholder="Password" formControlName="password"
+                        [class.is-invalid]="registerForm.get('password')?.invalid && 
+                        (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)">
+                    <label for="password">Password</label>
                 </div>
+            </div>
 
             <hr>
             <div class="text-center mt-3 mb-3">

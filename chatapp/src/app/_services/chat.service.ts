@@ -1,10 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, query, where, getDocs, setDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, deleteDoc, doc, query, where, getDocs, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Socket } from 'ngx-socket-io';
 import { combineLatest, from, map, Observable, of, switchMap } from 'rxjs';
-import { AllChats, Chat, ChatsDetail, Message } from '../_models/ChatModels';
+import { Chat, Message } from '../_models/ChatModels';
 import { AuthService } from './auth.service';
-// import { io, Socket } from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root'
@@ -13,110 +12,9 @@ export class ChatService {
   firestore = inject(Firestore);
   userId: string = '';
 
-  constructor(private socket: Socket, private authService: AuthService) {
-    // this.socket = io('http://localhost:3000')
-    
-  }
-
-  // getMessage(): Observable<string> {
-  //   return new Observable(observer => {
-  //     this.socket.on('chat message', (message: string) => {
-  //       observer.next(message);
-  //     });
-  //   });
-  // }
-
-  // getUserChats(): Observable<Chat[]> {
-  //   this.authService.user$.subscribe((user) => {
-  //     this.userId = user?.uid!;
-  //     console.log(this.userId)
-  //   })
-
-  //   const chatsRef = collection(this.firestore, 'chats');
-  //   console.log(chatsRef);
-  //   console.log(this.userId);
-  //   const q = query(chatsRef, where('userIds', 'array-contains', '6j6u4QszcDP1GwCn6yLQOh5tLZl2'));
-  //   console.log(q);
-  //   return from(getDocs(q)).pipe(
-  //     map(snapshot => {
-  //       console.log('Query Snapshot:', snapshot);
-  //       console.log('Snapshot Docs:', snapshot.docs);
-  
-  //       // Check if docs array is not empty
-  //       if (snapshot.empty) {
-  //         console.log('No matching documents.');
-  //         return []; // Return an empty array if no documents are found
-  //       }
-  
-  //       return snapshot.docs.map(doc => ({
-  //         id: doc.id,
-  //         ...doc.data()
-  //       } as Chat));
-  //     })
-  //   );
-  // }
-
-  // getUserChats(): Observable<Chat[]> {
-  //   return this.authService.user$.pipe(
-  //     switchMap((user) => {
-  //       this.userId = user?.uid!;
-  //       console.log(this.userId);
-  
-  //       const chatsRef = collection(this.firestore, 'chats');
-  //       const q = query(chatsRef, where('userIds', 'array-contains', this.userId));
-  
-  //       return from(getDocs(q)).pipe(
-  //         map(snapshot => {
-  //           console.log('Query Snapshot:', snapshot);
-  //           console.log('Snapshot Docs:', snapshot.docs);
-  
-  //           if (snapshot.empty) {
-  //             console.log('No matching documents.');
-  //             return []; // Return an empty array if no documents are found
-  //           }
-  
-  //           return snapshot.docs.map(doc => ({
-  //             id: doc.id,
-  //             ...doc.data()
-  //           } as Chat));
-  //         })
-  //       );
-  //     })
-  //   );
-  // }
-
-  // getUserChats(): Observable<Chat[]> {
-  //   return this.authService.user$.pipe(
-  //     switchMap((user) => {
-  //       this.userId = user?.uid!;
-  //       console.log(this.userId);
-  
-  //       const chatsRef = collection(this.firestore, 'chats2');
-  
-  //       const senderQuery = query(chatsRef, where('sender', '==', this.userId));
-  //       const receiverQuery = query(chatsRef, where('receiver', '==', this.userId));
-  //       console.log(senderQuery);
-  //       console.log(receiverQuery);
-  
-  //       const senderChats$ = from(getDocs(senderQuery)).pipe(
-  //         map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Chat)))
-  //       );
-  
-  //       const receiverChats$ = from(getDocs(receiverQuery)).pipe(
-  //         map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Chat)))
-  //       );
-  //       console.log(senderChats$);
-  //       console.log(receiverChats$);
-  
-  //       return combineLatest([senderChats$, receiverChats$]).pipe(
-  //         map(([senderChats, receiverChats]) => [...senderChats, ...receiverChats])
-  //       );
-  //     })
-  //   );
-  // }
+  constructor(private socket: Socket, private authService: AuthService) { }
 
   setUserId(userId: string) {
-    // this.userId = userId;
     this.socket.emit('register', userId);
   }
 
@@ -124,7 +22,6 @@ export class ChatService {
     return this.socket.fromEvent('received').pipe(
       map((data) => {
         console.log(data);
-        // this.saveMessagesToFireStore(data);
         return data;
       })
     );
@@ -142,41 +39,50 @@ export class ChatService {
       this.saveMessagesToFireStore(messageData);
     }
   }
-  
-  getUserChatsWithContent(): Observable<Chat[]> {
+
+  getMessagesFromFireStore(): Observable<Chat[]> {
     return this.authService.user$.pipe(
-      switchMap((user) => {
+      switchMap(user => {
         this.userId = user?.uid!;
         console.log(this.userId);
-  
+
         const chatsRef = collection(this.firestore, 'chats2');
-  
+
         const senderQuery = query(chatsRef, where('sender', '==', this.userId));
         const receiverQuery = query(chatsRef, where('receiver', '==', this.userId));
-  
+
         const senderChats$ = from(getDocs(senderQuery)).pipe(
           map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Chat)))
         );
-  
+
         const receiverChats$ = from(getDocs(receiverQuery)).pipe(
           map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Chat)))
         );
-  
+
         return combineLatest([senderChats$, receiverChats$]).pipe(
           switchMap(([senderChats, receiverChats]) => {
             const allChats = [...senderChats, ...receiverChats];
-  
+
             // Map over all chats and fetch chatContent for each
             const chatContentObservables = allChats.map(chat => {
               const chatContentRef = collection(this.firestore, `chats2/${chat.id}/chatContent`);
-              return collectionData(chatContentRef).pipe(
-                map(chatContent => ({
-                  ...chat,
-                  chatContent: chatContent as Message[] // Add the chatContent to each chat object
-                }))
+              
+              // Fetch the chatContent documents
+              return from(getDocs(chatContentRef)).pipe(
+                map(snapshot => {
+                  const chatContent = snapshot.docs.map(doc => ({
+                    id: doc.id, // Correctly include the document ID
+                    ...(doc.data() as Omit<Message, 'id'>) // Spread data but omit 'id' from the type
+                  }));
+
+                  return {
+                    ...chat,
+                    chatContent // Include the chatContent with IDs
+                  };
+                })
               );
             });
-  
+
             // Combine all chat content observables
             return combineLatest(chatContentObservables);
           })
@@ -225,10 +131,15 @@ export class ChatService {
     });
   }
 
-  deleteMessageFromFirestore(chat: AllChats, chatContent: ChatsDetail) {
-    const chatsRef = collection(this.firestore, 'chats2')
-    const q = query(chatsRef, where('sender', '==', chatContent.sender), 
-                    where('receiver', '==', chat.userIds.filter(id => id !== chatContent.sender)[0]));
-    
+  deleteMessageFromFirestore(chatId: string, chatContentId: string): Observable<void> {
+    const chatContentRef = doc(this.firestore, 'chats2', chatId, 'chatContent', chatContentId);
+
+    return from(deleteDoc(chatContentRef));
+  }
+
+  editMessageFromFirestore(chatId: string, chatContentId: string, newMessage: string): Observable<void> {
+    const chatContentRef = doc(this.firestore, 'chats2', chatId, 'chatContent', chatContentId);
+
+    return from(updateDoc(chatContentRef, {message: newMessage}));
   }
 }
