@@ -1,4 +1,5 @@
-<div class="chat-container container">
+<app-login *ngIf="!authService.currentUserSig()"></app-login>
+<div *ngIf="authService.currentUserSig()" class="chat-container container">
   <div class="message-container mb-3">
     <div class="users-list-group">
       <div class="list-group">

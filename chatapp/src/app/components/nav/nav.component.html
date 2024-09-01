@@ -5,17 +5,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarColor01">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#" *ngIf="authService.currentUserSig()">Features</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" *ngIf="authService.currentUserSig()">Pricing</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" *ngIf="authService.currentUserSig()">About</a>
-          </li>
-        </ul>
+        <ul class="navbar-nav me-auto"></ul>
         <div class="dropdown" dropdown *ngIf="authService.currentUserSig()">
           <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle>
             Welcome {{authService.currentUserSig()?.userName || authService.currentUserSig()?.email}}</a>

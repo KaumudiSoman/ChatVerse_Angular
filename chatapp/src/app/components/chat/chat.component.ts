@@ -33,7 +33,7 @@ export class ChatComponent {
   otherUser: string = '';
   userStatus: boolean = false;
 
-  constructor(private chatService: ChatService, private fb: FormBuilder, private authService: AuthService,
+  constructor(private chatService: ChatService, private fb: FormBuilder, public authService: AuthService,
     private utilService: UtilService, private socket: Socket
   ) { }
 

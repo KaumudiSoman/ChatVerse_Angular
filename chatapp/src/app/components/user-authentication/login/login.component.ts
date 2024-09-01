@@ -16,7 +16,6 @@ export class LoginComponent {
 
   ngOnInit(): void {
       this.initializeForm();
-      console.log('load')
   }
 
   initializeForm() {
